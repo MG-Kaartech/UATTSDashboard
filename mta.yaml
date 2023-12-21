@@ -1,0 +1,92 @@
+_schema-version: "3.2"
+ID: tsdashboarduat
+version: 0.0.1
+modules:
+- name: tsdashboarduat-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: tsdashboarduat-destination-service
+    parameters:
+      content-target: true
+  - name: tsdashboarduat_html_repo_host
+    parameters:
+      service-key:
+        name: tsdashboarduat_html_repo_host-key
+  - name: uaa_tsdashboarduat
+    parameters:
+      service-key:
+        name: uaa_tsdashboarduat-key
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: tsdashboarduat_tsdashboarduat_html_repo_host
+          ServiceInstanceName: tsdashboarduat-html5-app-host-service
+          ServiceKeyName: tsdashboarduat_html_repo_host-key
+          sap.cloud.service: tsdashboarduat
+        - Authentication: OAuth2UserTokenExchange
+          Name: tsdashboarduat_uaa_tsdashboarduat
+          ServiceInstanceName: tsdashboarduat-xsuaa-service
+          ServiceKeyName: uaa_tsdashboarduat-key
+          sap.cloud.service: tsdashboarduat
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+- name: tsdashboarduat-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: tsdashboarduat_html_repo_host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - commgctsdashboarduatui.zip
+      name: commgctsdashboarduatui
+      target-path: resources/
+- name: commgctsdashboarduatui
+  type: html5
+  path: tsdashboarduatui
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: tsdashboarduat-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-name: tsdashboarduat-destination-service
+    service-plan: lite
+- name: tsdashboarduat_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: tsdashboarduat-html5-app-host-service
+    service-plan: app-host
+- name: uaa_tsdashboarduat
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: tsdashboarduat-xsuaa-service
+    service-plan: application
+parameters:
+  deploy_mode: html5-repo

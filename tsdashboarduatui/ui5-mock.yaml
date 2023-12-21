@@ -1,0 +1,53 @@
+specVersion: "3.1"
+metadata:
+  name: com.mgc.tsdashboarduatui
+type: application
+server:
+  customMiddleware:
+    - name: fiori-tools-proxy
+      afterMiddleware: compression
+      configuration:
+        ignoreCertError: false
+        ui5:
+          path:
+            - /resources
+            - /test-resources
+          url: https://ui5.sap.com
+        backend:
+          - path: /v2
+            url: https://municipal-enterprises-limited-dev-municipalgroup-e7dzir6467619b.cfapps.ca10.hana.ondemand.com
+            destination: MGCAPI_PRD
+          - path: /odata/v2/
+            url: https://api47preview.sapsf.com
+            destination: sap-sf-emp-central
+          - path: /odata/v2/
+            url: https://api47preview.sapsf.com
+            destination: sap-sf-emp-central
+          - path: /odata/v2/
+            url: https://api47.sapsf.com
+            destination: sap-sf-emp-central_prd
+    - name: fiori-tools-appreload
+      afterMiddleware: compression
+      configuration:
+        port: 35729
+        path: webapp
+        delay: 300
+    - name: sap-fe-mockserver
+      beforeMiddleware: csp
+      configuration:
+        mountPath: /
+        services:
+          - urlPath: /v2/mgcdb-prd-srv
+            metadataPath: ./webapp/localService/metadata.xml
+            mockdataPath: ./webapp/localService/data
+            generateMockData: true
+        annotations: []
+        service:
+          - urlPath: /v2/mgcdb-prd-srv
+            generateMockData: true
+            metadataXmlPath: ./webapp/localService/mainService/metadata.xml
+            mockdataRootPath: ./webapp/localService/data
+          - urlPath: /odata/v2/
+            metadataXmlPath: ./webapp/localService/v2/metadata.xml
+            mockdataRootPath: ./webapp/localService/v2/mockdata
+            generateMockData: true
