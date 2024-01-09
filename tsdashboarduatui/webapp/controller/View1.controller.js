@@ -187,8 +187,8 @@ sap.ui.define([
                 var ID_2 = new sap.ui.model.Filter("ID_2", sap.ui.model.FilterOperator.Contains, sQuery);
                 var NAME_2 = new sap.ui.model.Filter("NAME_2", sap.ui.model.FilterOperator.Contains, sQuery);
                 var COMPANYID = new sap.ui.model.Filter("COMPANYID", sap.ui.model.FilterOperator.Contains, sQuery);
-                var PROJECTMANAGEREMAIL_2 = new sap.ui.model.Filter("PROJECTMANAGEREMAIL_2", sap.ui.model.FilterOperator.Contains, sQuery);
-                var PROJECTMANAGER_2 = new sap.ui.model.Filter("PROJECTMANAGER_2", sap.ui.model.FilterOperator.Contains, sQuery);
+                var PROJECTMANAGEREMAIL_2 = new sap.ui.model.Filter("PROJECTMANAGEREMAIL", sap.ui.model.FilterOperator.Contains, sQuery);
+                var PROJECTMANAGER_2 = new sap.ui.model.Filter("PROJECTMANAGER", sap.ui.model.FilterOperator.Contains, sQuery);
                 var filters = new sap.ui.model.Filter([ID, NAME, ID_1, NAME_1, ID_2, NAME_2, COMPANYID, PROJECTMANAGEREMAIL_2, PROJECTMANAGER_2]);
                 var oBinding = oEvent.getSource().getBinding("items");
                 oBinding.filter(filters, "Appliation");
@@ -228,7 +228,7 @@ sap.ui.define([
                 }
                 const diffTime = Math.abs(stdate - fndate);
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                if (diffDays > 7) {
+                if (diffDays >= 7) {
                     MessageBox.error(this.getResourceBundle().getText("errorMax"));
                     return;
                 }
